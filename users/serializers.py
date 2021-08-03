@@ -1,5 +1,13 @@
 from rest_framework import serializers
 from .models import User
+from djoser.serializers import UserCreateSerializer
+
+class UserCreateSerializer(UserCreateSerializer):
+    class Meta:
+        model = User
+        fields = ['email','first_name','last_name','password']
+        extra_kwargs = {'password': {'write_only': True}}
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if len(data.get("password")) <= 6:
-            raise serializers.ValidationError("Password must be greater than 6 characters !")
+            raise serializers.ValidationError({'error':'Passwords must be larger than 6 letters !'})
         return data
 
     def create(self,validated_data):

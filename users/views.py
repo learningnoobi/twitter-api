@@ -13,19 +13,13 @@ class UsersList(ListAPIView):
     
 
 
-class register(APIView):
-    permission_classes = [AllowAny]
+# class register(APIView):
+#     permission_classes = [AllowAny]
 
-    def post(self, request):
-
-        if len(request.data['password']) < 6:
-            raise exceptions.ValidationError({'error':'Passwords must be larger than 6 letters !'})
-
-        if request.data['password'] != request.data['password_confirm']:
-            raise exceptions.ValidationError({'error':'Passwords do not match  !'})
-
-        
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+#     def post(self, request):
+#         if request.data['password'] != request.data['password_confirm']:
+#             raise exceptions.ValidationError({'error':'Passwords do not match  !'})
+#         serializer = UserSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
