@@ -53,3 +53,11 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     #requred for creating user
     REQUIRED_FIELDS = ['first_name','last_name']
+
+    class Meta:
+        ordering = ['-date_joined']
+        verbose_name_plural="Custom Users"
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+    
