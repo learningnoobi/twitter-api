@@ -12,7 +12,7 @@ class UsersList(ListAPIView):
     serializer_class = UserSerializer
     
 
-
+#djsoer implemented
 # class register(APIView):
 #     permission_classes = [AllowAny]
 
