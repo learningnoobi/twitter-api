@@ -13,6 +13,7 @@ cryptography==3.4.7
 daphne==3.0.2
 defusedxml==0.7.1
 Django==3.2.6
+django-environ==0.4.5
 django-templated-mail==1.1.1
 djangorestframework==3.12.4
 djangorestframework-simplejwt==4.7.2

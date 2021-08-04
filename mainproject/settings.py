@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import environ
+env = environ.Env()
+# reading .env file
+environ.Env.read_env()
 from pathlib import Path
 from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+q+14mfx$^jxgf@^d3)gicud$h44=a1!8!q!g6-^9l60t0q5@-'
+SECRET_KEY =env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'users',
+    'tweets',
     'djoser'
 ]
 
@@ -144,8 +148,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'fanime492@gmail.com'
-EMAIL_HOST_PASSWORD = 'fzrsfhhtyjkdhxxw'
+EMAIL_HOST_USER = env('email')
+EMAIL_HOST_PASSWORD =env('password')
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
