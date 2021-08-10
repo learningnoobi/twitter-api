@@ -59,5 +59,5 @@ class User(AbstractUser):
         verbose_name_plural="Custom Users"
 
     def __str__(self):
-        return self.email
+        return f'{self.email}'
     

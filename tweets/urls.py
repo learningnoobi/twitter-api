@@ -5,4 +5,5 @@ router = DefaultRouter()
 router.register(r'', views.TweetViewSet)
 urlpatterns = [
     path('', include(router.urls)),
+    path('comments/<int:pk>/',views.ComentView)
 ]
