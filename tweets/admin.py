@@ -8,4 +8,4 @@ class TweetAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class TweetAdmin(admin.ModelAdmin):
-    list_display=['body','post','author']
+    list_display=['body','id','post','author']

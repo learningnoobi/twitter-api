@@ -4,6 +4,11 @@ from .import views
 router = DefaultRouter()
 router.register(r'', views.TweetViewSet)
 urlpatterns = [
+    
     path('', include(router.urls)),
-    path('comments/<int:pk>/',views.ComentView)
+    path('comments/<int:pk>/',views.ComentView),
+    path('comment_detail/<int:pk>/', views.CommentDetail.as_view()),
+    path('love/like-unlike/', views.like_unlike_tweet),
+    
 ]
+    

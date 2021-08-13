@@ -13,6 +13,7 @@ class Tweet(models.Model):
     parent =models.ForeignKey("self", on_delete=models.CASCADE, related_name='parenttweet',null=True, blank=True)
     share_count = models.IntegerField(blank=True, null=True, default=0)
     is_private = models.BooleanField(default=False,blank=True,null=True)
+    isEdited = models.BooleanField(default=False,blank=True,null=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -30,6 +31,10 @@ class Tweet(models.Model):
     @property
     def is_parent(self):
         return True if self.parent is None else False
+        
+    @property
+    def like_count(self):
+        return self.liked.all().count()
 
 class Comment(models.Model):
     body = models.TextField()
@@ -37,6 +42,7 @@ class Comment(models.Model):
     author = models.ForeignKey(User, related_name="authors",on_delete=models.CASCADE)
     post = models.ForeignKey(Tweet, related_name="parent_tweet",on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
+    isEdited = models.BooleanField(default=False,blank=True,null=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='parentchild')
     def __str__(self):
         return str(self.body[:15])

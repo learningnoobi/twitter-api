@@ -5,14 +5,14 @@ from djoser.serializers import UserCreateSerializer
 class UserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
-        fields = ['email','first_name','last_name','password']
+        fields = ['email','username','nickname','password','avatar']
         extra_kwargs = {'password': {'write_only': True}}
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email','first_name','last_name','password','avatar']
+        fields = ['email','username','nickname','password','avatar']
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
