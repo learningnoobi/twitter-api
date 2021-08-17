@@ -42,8 +42,9 @@ class User(AbstractUser):
     email = models.CharField(max_length=200, unique=True)
     password = models.CharField(max_length=200)
     following = models.ManyToManyField("self",related_name="followed" ,blank=True)
-    bio = models.TextField(blank=True ,default="Busy Thinking of awesome bio !")
+    bio = models.TextField(blank=True ,default="")
     avatar = models.ImageField(default='zenitsu.jpg', upload_to='avatars')
+    cover_image = models.ImageField(default='cover.jpg', upload_to='avatars')
    
 
     objects = CustomUserManager()
