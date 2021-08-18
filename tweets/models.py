@@ -3,6 +3,16 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+
+class TweetManager(models.Manager):
+    # show only public field (private=False) to other user but not for the author of the tweet
+    def only_public_or_author(self,user):
+        if user.is_authenticated:
+            tweets = Tweet.objects.filter(author = user)
+            return Tweet.objects.filter(is_private=False) | tweets
+        return Tweet.objects.filter(is_private=False) 
+
+
 class Tweet(models.Model):
     title = models.CharField(max_length=200)
     body = models.TextField(blank=True)
@@ -16,7 +26,7 @@ class Tweet(models.Model):
     isEdited = models.BooleanField(default=False,blank=True,null=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-
+    objects = TweetManager()
     class Meta:
         ordering = ['-created']
         verbose_name = _("Tweet")

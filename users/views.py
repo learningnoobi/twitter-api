@@ -7,6 +7,7 @@ from .serializers import UserSerializer,UserEditSerializer
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView
 from .permissions import IsUserOrReadOnly
+
 class UsersList(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
