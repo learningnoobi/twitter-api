@@ -41,7 +41,7 @@ class User(AbstractUser):
     nickname = models.CharField(max_length=200,blank=True, null=True)
     email = models.CharField(max_length=200, unique=True)
     password = models.CharField(max_length=200)
-    following = models.ManyToManyField("self",related_name="followed" ,blank=True)
+    following = models.ManyToManyField("self",symmetrical=False,related_name="followed" ,blank=True)
     bio = models.TextField(blank=True ,default="")
     avatar = models.ImageField(default='zenitsu.jpg', upload_to='avatars')
     cover_image = models.ImageField(default='cover.jpg', upload_to='avatars')
@@ -59,4 +59,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.email}'
+    # @property
+    # def userfollow(self):
+    #     return self.followed.all().count()
     

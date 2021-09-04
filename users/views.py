@@ -27,4 +27,15 @@ class UserDetailView(RetrieveUpdateDestroyAPIView):
         if self.request.method in ["PUT","DELETE"]:
             return UserEditSerializer
 
-    
+@api_view(['POST'])
+def follow_unfollow(request):
+    username = request.POST.get('username')
+    myprofile = request.user
+    obj = User.objects.get(username=username)
+    print("my man  " ,obj)
+    if obj in myprofile.following.all():
+        myprofile.following.remove(obj)
+        return Response({'follow':False,'followers':obj.followed.count()})
+    else:
+        myprofile.following.add(obj)
+        return Response({'follow':True,'followers':obj.followed.count()})
