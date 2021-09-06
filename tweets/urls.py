@@ -10,6 +10,7 @@ urlpatterns = [
     path('comment_detail/<int:pk>/', views.CommentDetail.as_view()),
     path('love/like-unlike/', views.like_unlike_tweet),
     path('love/bookmark/', views.bookmark_tweet),
+    path('love/bookmarkList/',views.bookmarkList),
     path('specific/<username>/',views.UserTweetList)
     
 ]

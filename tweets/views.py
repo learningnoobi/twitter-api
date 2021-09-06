@@ -97,3 +97,9 @@ def UserTweetList(request,username):
             tweets = tweets|owner_private
         serializer = UserTweetSerializer(tweets, many=True)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def bookmarkList(request):
+    bookmark_tweet = request.user.bookmark.all()
+    serializer = TweetSerializer(bookmark_tweet, many=True,context={'request': request})
+    return Response(serializer.data)
