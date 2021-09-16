@@ -59,7 +59,5 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.email}'
-    # @property
-    # def userfollow(self):
-    #     return self.followed.all().count()
+
     

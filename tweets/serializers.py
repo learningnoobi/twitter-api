@@ -4,6 +4,7 @@ from users.serializers import UserSerializer
 from users.models import User
 
 
+
 class CommentSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True, many=False)
     class Meta:
@@ -11,12 +12,13 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id','body','author','isEdited','created']
 class UserTweetSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True, many=False)
-
     like_count = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Tweet
         fields = '__all__'
+
     def get_like_count(self,obj):
+        
         return obj.liked.count()  
 
 class TweetSerializer(serializers.ModelSerializer):

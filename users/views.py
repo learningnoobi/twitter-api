@@ -11,25 +11,31 @@ from .permissions import IsUserOrReadOnly
 class UsersList(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+
 
 
 class UserDetailView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserEditSerializer
     lookup_url_kwarg ='username'
     lookup_field='username'
     permission_classes = [IsUserOrReadOnly]
 
-    def get_serializer_class(self):
-        if self.request.method=="GET":
-            return UserSerializer
-        if self.request.method in ["PUT","DELETE"]:
-            return UserEditSerializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        context["bihal"] = "sucks"
+        return context  
+
+    # def get_serializer_class(self):
+    #     if self.request.method=="GET":
+    #         return UserSerializer(context={'request': self.request})
+    #     if self.request.method in ["PUT","DELETE"]:
+    #         return UserEditSerializer(context={'request': self.request})
 
 @api_view(['POST'])
 def follow_unfollow(request):
-    username = request.POST.get('username')
+    username = request.data.get('username')
     myprofile = request.user
     obj = User.objects.get(username=username)
     print("my man  " ,obj)
