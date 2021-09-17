@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('comments/<int:pk>/',views.ComentView),
     path('comment_detail/<int:pk>/', views.CommentDetail.as_view()),
+    path('comments/reply/<int:pk>/',views.ComentReplyView),
     path('love/like-unlike/', views.like_unlike_tweet),
     path('love/bookmark/', views.bookmark_tweet),
     path('love/bookmarkList/',views.bookmarkList),

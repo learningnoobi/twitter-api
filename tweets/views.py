@@ -38,9 +38,10 @@ def ComentView(request,pk):
     data = request.data
     if request.method=='GET':
         tweet = Tweet.objects.get(id=pk)
-        comments = Comment.objects.filter(post=tweet).order_by('-created')
+        comments = Comment.objects.filter(post=tweet,parent=None).order_by('-created')
         serializer = CommentSerializer(comments ,many=True)
         return Response(serializer.data)
+
     if request.method=='POST':
         tweet = Tweet.objects.get(id=pk)
         if len(data.get('body')) < 1:
@@ -51,8 +52,25 @@ def ComentView(request,pk):
         return Response(serializer.data)
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly,IsAuthorOrReadOnly]
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+
+@api_view(['POST','DELETE'])
+def ComentReplyView(request,pk):
+    data = request.data
+    if request.method=='POST':
+        tweet = Tweet.objects.get(id=pk)
+        parentComId = data.get('comId')
+        if len(data.get('body')) < 1:
+            raise exceptions.APIException('Cannot be blank')
+        parent = Comment.objects.get(id=parentComId)
+        new_comment = Comment(parent=parent,body=data.get('body'),author=request.user,post=tweet)
+        new_comment.save()
+        serializer = CommentSerializer(new_comment)
+        return Response(serializer.data)
+
 
 @api_view(['POST'])
 def like_unlike_tweet(request):
