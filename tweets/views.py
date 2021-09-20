@@ -1,12 +1,12 @@
-from rest_framework import viewsets,exceptions
+from rest_framework import viewsets,exceptions,status
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view,action
+from rest_framework.decorators import api_view,permission_classes
 from .models import Tweet,Comment
 from .serializers import (TweetSerializer
                     ,CommentSerializer,
                     UserTweetSerializer,AnonTweetSerializer
                     )
-from rest_framework.permissions import IsAuthenticatedOrReadOnly,AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .permissions import IsAuthorOrReadOnly
 from rest_framework.response import Response
 from rest_framework import generics
@@ -22,18 +22,40 @@ class TweetViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Tweet.objects.only_public_or_author(self.request.user)
 
-    def get_serializer_class(self):
-        if self.request.user.is_authenticated:
-            return TweetSerializer
-        if not self.request.user.is_authenticated:
-            return AnonTweetSerializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context 
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def ReTweetView(request):
+    data = request.data
+    tweet = Tweet.objects.get(id=data.get("tweetId"))
+    if tweet.author == request.user:
+        raise exceptions.APIException("Can't Retweet your own post")
+    # try:
+    parent_tweet = Tweet.objects.filter(parent=tweet,author=request.user)
+    if parent_tweet.exists():
+        raise exceptions.APIException("Already retweeted !")
+    else:
+        re_tweet = Tweet.objects.create(
+            author=request.user,
+            parent=tweet
+            )
+    serializer = TweetSerializer(re_tweet ,{'request':request})
+    return serializer.data
+    # except Exception as e:
+    #     return Response({'error':f'{e}'},status=status.HTTP_403_FORBIDDEN)
+
+
+
 
 @api_view(['GET','POST','DELETE'])
+@permission_classes((IsAuthenticated,))
 def ComentView(request,pk):
     data = request.data
     if request.method=='GET':
@@ -58,6 +80,7 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 @api_view(['POST','DELETE'])
+@permission_classes((IsAuthenticated,))
 def ComentReplyView(request,pk):
     data = request.data
     if request.method=='POST':
@@ -71,8 +94,18 @@ def ComentReplyView(request,pk):
         serializer = CommentSerializer(new_comment)
         return Response(serializer.data)
 
+# @api_view(['GET'])
+# def get_child(request,pk):
+    
+#     if request.method=='GET':
+#         parent_comment = Comment.objects.get(id=pk)
+#         children = parent_comment.children
+#         serializer = CommentSerializer(children,many=True)
+#         return Response(serializer.data)
+       
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,))
 def like_unlike_tweet(request):
     if request.method =="POST":
         pk = request.data.get("pk")
@@ -90,6 +123,7 @@ def like_unlike_tweet(request):
     return Response({"love":"me"})
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,))
 def bookmark_tweet(request):
     if request.method =="POST":
         pk = request.data.get("pk")
@@ -106,6 +140,7 @@ def bookmark_tweet(request):
     return Response({"bookmar":"lol"})
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated,))
 def UserTweetList(request,username):
     user = User.objects.get(username=username)
     if request.method=='GET':
@@ -117,6 +152,7 @@ def UserTweetList(request,username):
         return Response(serializer.data)
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated,))
 def bookmarkList(request):
     bookmark_tweet = request.user.bookmark.all()
     serializer = TweetSerializer(bookmark_tweet, many=True,context={'request': request})

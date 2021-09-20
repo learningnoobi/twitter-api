@@ -13,6 +13,7 @@ class UsersList(ListAPIView):
     serializer_class = UserSerializer
 
 
+#djoser
 
 class UserDetailView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
