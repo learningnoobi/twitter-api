@@ -11,7 +11,10 @@ from .permissions import IsUserOrReadOnly
 class UsersList(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context  
 
 #djoser
 
@@ -25,7 +28,6 @@ class UserDetailView(RetrieveUpdateDestroyAPIView):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["request"] = self.request
-        context["bihal"] = "sucks"
         return context  
 
     # def get_serializer_class(self):

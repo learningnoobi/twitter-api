@@ -44,7 +44,7 @@ class Tweet(models.Model):
         
     @property
     def like_count(self):
-        return self.liked.all().count()
+        return self.liked.count()
 
 class Comment(models.Model):
     body = models.TextField()
@@ -62,7 +62,7 @@ class Comment(models.Model):
         return True if self.parent is None else False
     @property
     def like_comment(self):
-        return self.liked.all().count()
+        return self.liked.count()
     
     @property
     def children(self):

@@ -34,7 +34,11 @@ class TweetViewSet(viewsets.ModelViewSet):
 @permission_classes((IsAuthenticated,))
 def ReTweetView(request):
     data = request.data
-    tweet = Tweet.objects.get(id=data.get("tweetId"))
+    tweetId = data["tweetId"]
+    try:
+        tweet = Tweet.objects.get(id=tweetId)
+    except:
+        raise exceptions.APIException("Not Found ! ")
     if tweet.author == request.user:
         raise exceptions.APIException("Can't Retweet your own post")
     # try:
@@ -47,7 +51,7 @@ def ReTweetView(request):
             parent=tweet
             )
     serializer = TweetSerializer(re_tweet ,{'request':request})
-    return serializer.data
+    return Response({"retweet":True})
     # except Exception as e:
     #     return Response({'error':f'{e}'},status=status.HTTP_403_FORBIDDEN)
 
@@ -61,7 +65,7 @@ def ComentView(request,pk):
     if request.method=='GET':
         tweet = Tweet.objects.get(id=pk)
         comments = Comment.objects.filter(post=tweet,parent=None).order_by('-created')
-        serializer = CommentSerializer(comments ,many=True)
+        serializer = CommentSerializer(comments ,many=True,context={'request': request})
         return Response(serializer.data)
 
     if request.method=='POST':
@@ -70,7 +74,7 @@ def ComentView(request,pk):
             raise exceptions.APIException('Cannot be blank')
         new_comment = Comment(body=data.get('body'),author=request.user,post=tweet)
         new_comment.save()
-        serializer = CommentSerializer(new_comment)
+        serializer = CommentSerializer(new_comment,context={'request': request})
         return Response(serializer.data)
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -91,7 +95,7 @@ def ComentReplyView(request,pk):
         parent = Comment.objects.get(id=parentComId)
         new_comment = Comment(parent=parent,body=data.get('body'),author=request.user,post=tweet)
         new_comment.save()
-        serializer = CommentSerializer(new_comment)
+        serializer = CommentSerializer(new_comment,context={'request': request})
         return Response(serializer.data)
 
 # @api_view(['GET'])
@@ -120,7 +124,26 @@ def like_unlike_tweet(request):
             'liked':liked,
             'count':tweet.like_count
         })
-    return Response({"love":"me"})
+    return Response({"love":"no"})
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def like_unlike_comment(request):
+    if request.method =="POST":
+        pk = request.data.get("pk")
+        comment = get_object_or_404(Comment,id=pk)
+        if request.user in comment.liked.all():
+            liked = False
+            comment.liked.remove(request.user)
+        else:
+            liked = True
+            comment.liked.add(request.user)
+        return Response({
+            'liked':liked,
+            'count':comment.like_comment
+        })
+    return Response({"love":"no"})
+
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
@@ -148,7 +171,7 @@ def UserTweetList(request,username):
         if user ==request.user:
             owner_private = Tweet.objects.filter(author=request.user).filter(is_private=True)
             tweets = tweets|owner_private
-        serializer = UserTweetSerializer(tweets, many=True)
+        serializer = TweetSerializer(tweets, many=True,context={'request': request})
         return Response(serializer.data)
 
 @api_view(['GET'])

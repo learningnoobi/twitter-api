@@ -11,8 +11,9 @@ class UserCreateSerializer(UserCreateSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # i_follow = serializers.SerializerMethodField(read_only=True)
+    i_follow = serializers.SerializerMethodField(read_only=True)
     followers =  serializers.SerializerMethodField(read_only=True)
+    following = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = User
         fields = [
@@ -20,12 +21,19 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname','password',
             'avatar','bio','cover_image',
             'date_joined',
-            'followers'
+            'followers','following','i_follow'
             ]
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_followers(self,obj):
         return obj.followed.count()
+        
+    def get_following(self,obj):
+        return obj.following.count()
+    def get_i_follow(self,obj):
+        current_user = self.context.get('request').user
+        print('ore is ', current_user)
+        return True if current_user in obj.followed.all() else False
 
 
     def validate(self, data):

@@ -7,17 +7,23 @@ from rest_framework.response import Response
 
 class CommentSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True, many=False)
+    iliked = serializers.SerializerMethodField(read_only=True)
     is_parent = serializers.SerializerMethodField(read_only=True)
     children = serializers.SerializerMethodField(read_only=True)
     parentId= serializers.SerializerMethodField(read_only=True)
+    like_count = serializers.SerializerMethodField(read_only=True)
+
+
     class Meta:
         model = Comment
         fields = [
             'id','body','author',
             'isEdited','children','is_parent',
-            'parentId','created',
+            'parentId','created','iliked','like_count'
             ]
-    
+    def get_iliked(self,obj):
+        return True if self.context.get('request').user in obj.liked.all() else False
+        
     def get_is_parent(self,obj):
         return obj.is_parent
 
@@ -27,8 +33,12 @@ class CommentSerializer(serializers.ModelSerializer):
         return None
 
     def get_children(self,obj):
-        serializer = CommentSerializer(obj.children, many=True)
+        serializer = CommentSerializer(obj.children, many=True,
+        context={'request':self.context.get('request')})
         return serializer.data
+    
+    def get_like_count(self,obj):
+        return obj.liked.count()
 
 class UserTweetSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True, many=False)
