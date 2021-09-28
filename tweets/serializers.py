@@ -56,15 +56,20 @@ class TweetSerializer(serializers.ModelSerializer):
     i_bookmarked = serializers.SerializerMethodField(read_only=True)
     like_count = serializers.SerializerMethodField(read_only=True)
     myparent = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Tweet
         fields = '__all__'
+
+
     def get_myparent(self,obj):
         serializer = TweetSerializer(obj.parent,
         context={'request':self.context.get('request')})
         return serializer.data
     def get_iliked(self,obj):
         return True if self.context.get('request').user in obj.liked.all() else False
+    
+
 
     def get_i_bookmarked(self,obj):
         return True if self.context.get('request').user in obj.bookmark.all() else False

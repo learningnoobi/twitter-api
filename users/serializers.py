@@ -30,6 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
         
     def get_following(self,obj):
         return obj.following.count()
+        
     def get_i_follow(self,obj):
         current_user = self.context.get('request').user
         print('ore is ', current_user)
