@@ -11,6 +11,10 @@ import json
 def create_notification(sender, instance, created, *args, **kwargs):
     from_user = instance.from_user.username
     to_user = instance.to_user.username
+    noti_count = Notification.objects.filter(
+        to_user=instance.to_user,
+        user_has_seen=False
+        ).count()
     print("from user " ,from_user)
     print("to user ", to_user)
     if created:
@@ -22,6 +26,6 @@ def create_notification(sender, instance, created, *args, **kwargs):
                 "type":"send_status",
                 "from":from_user,
                 "data":f"{from_user} liked your photo",
-                "count":2
+                "count":noti_count
             }
         )

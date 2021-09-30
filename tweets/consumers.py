@@ -18,7 +18,6 @@ class MyConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def receive_json(self, content):
-        command = content.get("command", None)
         message = content.get("message", None)
         await self.channel_layer.group_send(
             self.room_name,
