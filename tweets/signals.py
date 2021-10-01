@@ -7,10 +7,22 @@ from asgiref.sync import async_to_sync
 import json
 
 
+msg = {
+    "L":"liked your tweet",
+    "R":"replied your tweet",
+    "F":"followed you ",
+}
+
+def noti_msg(type):
+    return msg[type]
+
+
 @receiver(post_save,sender=Notification)
 def create_notification(sender, instance, created, *args, **kwargs):
     from_user = instance.from_user.username
     to_user = instance.to_user.username
+    noti_type = instance.notification_type #L
+    msg = noti_msg(noti_type)
     noti_count = Notification.objects.filter(
         to_user=instance.to_user,
         user_has_seen=False
@@ -21,11 +33,11 @@ def create_notification(sender, instance, created, *args, **kwargs):
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
         f'love_{to_user}',
-            # "love",
             {
                 "type":"send_status",
                 "from":from_user,
-                "data":f"{from_user} liked your photo",
+                "data":f"{from_user} {msg}",
                 "count":noti_count
             }
         )
+

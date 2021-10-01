@@ -76,6 +76,12 @@ def ComentView(request, pk):
         new_comment = Comment(body=data.get(
             'body'), author=request.user, post=tweet)
         new_comment.save()
+        if request.user != tweet.author:
+            Notification.objects.get_or_create(
+                notification_type='R',
+                tweet=tweet,
+                to_user=tweet.author,
+                from_user=request.user)
         serializer = CommentSerializer(
             new_comment, context={'request': request})
         return Response(serializer.data)
@@ -100,6 +106,13 @@ def ComentReplyView(request, pk):
         new_comment = Comment(parent=parent, body=data.get(
             'body'), author=request.user, post=tweet)
         new_comment.save()
+        if request.user != parent.author:
+              Notification.objects.get_or_create(
+                    notification_type='R',
+                    tweet=tweet,
+                    to_user=tweet.author,
+                    from_user=request.user)
+        
         serializer = CommentSerializer(
             new_comment, context={'request': request})
         return Response(serializer.data)

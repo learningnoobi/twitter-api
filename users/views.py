@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView
 from .permissions import IsUserOrReadOnly
 
+
+from notifications.models import Notification
 class UsersList(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -50,4 +52,9 @@ def follow_unfollow(request):
         })
     else:
         myprofile.following.add(obj)
+        Notification.objects.get_or_create(
+            notification_type='F',
+            to_user=obj,
+            from_user=request.user
+            )
         return Response({'follow':True,'followers':obj.followed.count()})
