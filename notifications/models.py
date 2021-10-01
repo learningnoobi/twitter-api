@@ -9,6 +9,7 @@ class Notification(models.Model):
         ('F','follow'),
         ('M','message'),
         ('R','reply'),
+        ('RT','retweet')
     ]
     notification_type = models.CharField(max_length=2,choices=types,default=None)
     tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='+', blank=True, null=True)

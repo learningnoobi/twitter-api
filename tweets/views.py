@@ -51,6 +51,11 @@ def ReTweetView(request):
             author=request.user,
             parent=tweet
         )
+        Notification.objects.get_or_create(
+                notification_type='RT',
+                tweet=tweet,
+                to_user=tweet.author,
+                from_user=request.user)
     serializer = TweetSerializer(re_tweet, {'request': request})
     return Response({"retweet": True})
     # except Exception as e:

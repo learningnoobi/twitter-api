@@ -11,6 +11,7 @@ msg = {
     "L":"liked your tweet",
     "R":"replied your tweet",
     "F":"followed you ",
+    "RT":"retweeted your tweet"
 }
 
 def noti_msg(type):
