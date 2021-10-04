@@ -8,6 +8,8 @@ from django.db.models import Q
 from .models import Notification
 from .serializers import NotificationSerializer
 from rest_framework.views import APIView
+from mainproject.pagination import CustomPagination
+
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
@@ -15,6 +17,8 @@ def NotificationView(request):
     notify_list = Notification.objects.filter(
         to_user=request.user,
     ).order_by('-id')
+    paginator = CustomPagination()
+    result_page = paginator.paginate_queryset(notify_list,request)
     noti_count = Notification.objects.filter(
         to_user=request.user,
         user_has_seen=False
@@ -25,13 +29,13 @@ def NotificationView(request):
     """
     if noti_count == 0:
         noti_count  = None  
-    serializer = NotificationSerializer(notify_list, many=True, context={
+    serializer = NotificationSerializer(result_page, many=True, context={
                                         'noti_count': noti_count,
                                         'request': request
                                         })
-    return Response(serializer.data)
-
-
+    # return Response(serializer.data)
+    return paginator.get_paginated_response(serializer.data)
+    
 class NotificationSeen(APIView):
     def get(self, request):
         notify_list = Notification.objects.filter(

@@ -73,3 +73,9 @@ class UserEditSerializer(serializers.ModelSerializer):
     
     def get_following(self,obj):
         return obj.following.count()
+
+class UserLessInfoSerializer(UserCreateSerializer):
+    class Meta:
+        model = User
+        fields = ['username','nickname','avatar',]
+        extra_kwargs = {'password': {'write_only': True}}
