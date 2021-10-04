@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 def NotificationView(request):
     notify_list = Notification.objects.filter(
         to_user=request.user,
-    )
+    ).order_by('-id')
     noti_count = Notification.objects.filter(
         to_user=request.user,
         user_has_seen=False
@@ -34,10 +34,11 @@ def NotificationView(request):
 
 class NotificationSeen(APIView):
     def get(self, request):
-        noti_count = Notification.objects.filter(
-            to_user=request.user
+        notify_list = Notification.objects.filter(
+            to_user=request.user,
+            user_has_seen=False
         )
-        for i in noti_count:
+        for i in notify_list:
             i.user_has_seen = True
             i.save()
         return Response({"user_seen": True})
@@ -48,6 +49,6 @@ class NotificationSeen(APIView):
         if notification.to_user == request.user:
             notification.user_has_seen =  True
             notification.delete()
-            return Response({"user_seen": True})
+            return Response({"notification_deleted": True})
 
 

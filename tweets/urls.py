@@ -7,7 +7,7 @@ router.register(r'', views.TweetViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('post/retweet/',views.ReTweetView),
-    path('comments/<int:pk>/',views.ComentView),
+    path('comments/<int:pk>/',views.ComentView.as_view()),
     path('comment_detail/<int:pk>/', views.CommentDetail.as_view()),
     path('comments/reply/<int:pk>/',views.ComentReplyView),
     path('love/like-unlike/', views.like_unlike_tweet),

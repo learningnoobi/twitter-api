@@ -4,6 +4,7 @@ from users.serializers import UserSerializer
 
 class NotificationSerializer(serializers.ModelSerializer):
     from_user = serializers.StringRelatedField(read_only=True)
+    to_user = serializers.StringRelatedField(read_only=True)
     noti_count = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Notification

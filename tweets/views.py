@@ -1,10 +1,9 @@
 from rest_framework import viewsets, exceptions, status
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from .models import Tweet, Comment
-from .serializers import (TweetSerializer, CommentSerializer,
-                          UserTweetSerializer, AnonTweetSerializer
-                          )
+from .serializers import (TweetSerializer, CommentSerializer)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .permissions import IsAuthorOrReadOnly
 from rest_framework.response import Response
@@ -12,11 +11,13 @@ from rest_framework import generics
 from users.models import User
 from django.db.models import Q
 from notifications.models import Notification
+from mainproject.pagination import CustomPagination
 
 
 class TweetViewSet(viewsets.ModelViewSet):
     queryset = Tweet.objects.all()
     serializer_class = TweetSerializer
+    pagination_class = CustomPagination
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     def get_queryset(self):
@@ -58,24 +59,28 @@ def ReTweetView(request):
                 from_user=request.user)
     serializer = TweetSerializer(re_tweet, {'request': request})
     return Response({"retweet": True})
-    # except Exception as e:
-    #     return Response({'error':f'{e}'},status=status.HTTP_403_FORBIDDEN)
+    
 
 
-@api_view(['GET', 'POST', 'DELETE'])
-@permission_classes((IsAuthenticated,))
-def ComentView(request, pk):
-    data = request.data
-    if request.method == 'GET':
+
+class ComentView(APIView):
+    permission_classes= [IsAuthenticated]
+    pagination_class = CustomPagination
+
+    def get_object(self,pk):
         tweet = Tweet.objects.get(id=pk)
+        return tweet
+    def get(self, request,pk):
+        tweet = self.get_object(pk)
         comments = Comment.objects.filter(
             post=tweet, parent=None).order_by('-created')
         serializer = CommentSerializer(
             comments, many=True, context={'request': request})
         return Response(serializer.data)
 
-    if request.method == 'POST':
-        tweet = Tweet.objects.get(id=pk)
+    def post(self,request,pk):
+        data = request.data
+        tweet = self.get_object(pk)
         if len(data.get('body')) < 1:
             raise exceptions.APIException('Cannot be blank')
         new_comment = Comment(body=data.get(
@@ -91,7 +96,35 @@ def ComentView(request, pk):
             new_comment, context={'request': request})
         return Response(serializer.data)
 
+# @api_view(['GET', 'POST', 'DELETE'])
+# @permission_classes((IsAuthenticated,))
+# def ComentView(request, pk):
+#     data = request.data
+#     def delete(self, request, pk):
+#     if request.method == 'GET':
+#         tweet = Tweet.objects.get(id=pk)
+#         comments = Comment.objects.filter(
+#             post=tweet, parent=None).order_by('-created')
+#         serializer = CommentSerializer(
+#             comments, many=True, context={'request': request})
+#         return Response(serializer.data)
 
+#     if request.method == 'POST':
+#         tweet = Tweet.objects.get(id=pk)
+#         if len(data.get('body')) < 1:
+#             raise exceptions.APIException('Cannot be blank')
+#         new_comment = Comment(body=data.get(
+#             'body'), author=request.user, post=tweet)
+#         new_comment.save()
+#         if request.user != tweet.author:
+#             Notification.objects.get_or_create(
+#                 notification_type='R',
+#                 tweet=tweet,
+#                 to_user=tweet.author,
+#                 from_user=request.user)
+#         serializer = CommentSerializer(
+#             new_comment, context={'request': request})
+#         return Response(serializer.data)
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     queryset = Comment.objects.all()
@@ -114,7 +147,7 @@ def ComentReplyView(request, pk):
         if request.user != parent.author:
               Notification.objects.get_or_create(
                     notification_type='R',
-                    tweet=tweet,
+                    comment=parent,
                     to_user=tweet.author,
                     from_user=request.user)
         
@@ -122,14 +155,6 @@ def ComentReplyView(request, pk):
             new_comment, context={'request': request})
         return Response(serializer.data)
 
-
-# def create_notification(type, post, to_user, from_user):
-#     notifications = Notification.objects.create(
-#         notification_type=f"{type}",
-#         tweet=post,
-#         to_user=to_user,
-#         from_user=from_user)
-#     return notifications
 
 
 @api_view(['POST'])
