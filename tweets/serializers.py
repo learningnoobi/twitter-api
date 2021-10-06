@@ -4,6 +4,7 @@ from users.serializers import UserSerializer
 from users.models import User
 from rest_framework.response import Response
 
+from users.serializers import UserLessInfoSerializer
 
 class CommentSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True, many=False)
@@ -80,11 +81,12 @@ class TweetSerializer(serializers.ModelSerializer):
 
 
 class AnonTweetSerializer(serializers.ModelSerializer):
+    author = UserLessInfoSerializer(read_only=True)
     class Meta:
         model = Tweet
-        fields = ['id','title',]
+        fields = ['id','title','author']
 
 class LessCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = [ 'id','body',]
+        fields = [ 'id','body']

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from .models import Tweet, Comment
-from .serializers import (TweetSerializer, CommentSerializer)
+from .serializers import (TweetSerializer, CommentSerializer,AnonTweetSerializer)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .permissions import IsAuthorOrReadOnly
 from rest_framework.response import Response
@@ -219,3 +219,26 @@ def bookmarkList(request):
     serializer = TweetSerializer(
         bookmark_tweet, many=True, context={'request': request})
     return Response(serializer.data)
+
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+
+class SearchList(generics.ListAPIView):
+    queryset = Tweet.objects.all()
+    serializer_class = AnonTweetSerializer
+    filter_backends = [DjangoFilterBackend,filters.SearchFilter]
+    # filter_fields = ('title','author__username')
+    ordering =('-id')
+    search_fields = ('title','author__username')
+
+    # def get_queryset(self,*args,**kwargs):
+    #     queryset = Tweet.objects.all()
+    #     query = self.request.query_params.dict()
+    #     keyword = query.get("keyword",'')
+    #     if keyword:
+    #         queryset =  queryset.filter(
+    #             Q(title__icontains=keyword) |
+    #              Q(author__username__icontains=keyword )|
+    #             )
+    #     return queryset.order_by("-id")
+    

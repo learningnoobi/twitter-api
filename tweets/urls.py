@@ -14,6 +14,7 @@ urlpatterns = [
     path('love/like-unlike-comment/',views.like_unlike_comment),
     path('love/bookmark/', views.bookmark_tweet),
     path('love/bookmarkList/',views.bookmarkList),
+    path('search/custom/',views.SearchList.as_view()),
     path('specific/<username>/',views.UserTweetList)
     
 ]

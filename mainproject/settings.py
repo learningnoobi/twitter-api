@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'users',
     'tweets',
     'notifications',
-    'djoser'
+    'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -144,6 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
 
     ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 
 }
 
@@ -172,6 +174,7 @@ EMAIL_HOST_PASSWORD = env('password')
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
+    #   "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1),
     "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=4),
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
