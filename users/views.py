@@ -61,3 +61,9 @@ def follow_unfollow(request):
          'followers': obj.followed.count(),
          'state':'UnFollow'}
          )
+
+@api_view(['GET'])
+def recommend_user(request):
+    users = User.objects.all().exclude(username=request.user.username)
+    serializer = UserSerializer(users,many=True,context={'request':request})
+    return Response(serializer.data)
