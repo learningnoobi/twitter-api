@@ -6,6 +6,7 @@ router.register(r'', views.TweetViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('explore/global/', views.ExploreTweetViewSet.as_view()),
     path('post/retweet/',views.ReTweetView),
     path('comments/<int:pk>/',views.ComentView.as_view()),
     path('comment_detail/<int:pk>/', views.CommentDetail.as_view()),

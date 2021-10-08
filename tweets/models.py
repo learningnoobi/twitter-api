@@ -9,8 +9,11 @@ class TweetManager(models.Manager):
     # show only public field (private=False) to other user but not for the author of the tweet
     def only_public_or_author(self, user):
         if user.is_authenticated:
+            user_i_follow = user.following.all()
+            #showing only the posts of user i follow
+            feed_tweets = Tweet.objects.filter(is_private=False,author_id__in=user_i_follow) 
             tweets = Tweet.objects.filter(author=user)
-            return Tweet.objects.filter(is_private=False) | tweets
+            return feed_tweets | tweets
         return Tweet.objects.filter(is_private=False)
 
 

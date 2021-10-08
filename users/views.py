@@ -64,6 +64,7 @@ def follow_unfollow(request):
 
 @api_view(['GET'])
 def recommend_user(request):
-    users = User.objects.all().exclude(username=request.user.username)
+    users = User.objects.exclude(username=request.user.username)
+    users = users.exclude(id__in = request.user.following.all())[:5]
     serializer = UserSerializer(users,many=True,context={'request':request})
     return Response(serializer.data)

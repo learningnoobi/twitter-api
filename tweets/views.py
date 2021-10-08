@@ -3,16 +3,16 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from .models import Tweet, Comment
-from .serializers import (TweetSerializer, CommentSerializer,AnonTweetSerializer)
+from .serializers import (TweetSerializer, CommentSerializer)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .permissions import IsAuthorOrReadOnly
 from rest_framework.response import Response
 from rest_framework import generics
 from users.models import User
-from django.db.models import Q
 from notifications.models import Notification
 from mainproject.pagination import CustomPagination
-
+from users.models import User
+from rest_framework.generics import ListAPIView
 
 class TweetViewSet(viewsets.ModelViewSet):
     queryset = Tweet.objects.all()
@@ -30,6 +30,17 @@ class TweetViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+class ExploreTweetViewSet(ListAPIView):
+    queryset = Tweet.objects.all()
+    serializer_class = TweetSerializer
+    pagination_class = CustomPagination
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
 
 
 @api_view(['POST'])
@@ -222,23 +233,10 @@ def bookmarkList(request):
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from users.serializers import UserLessInfoSerializer
 
 class SearchList(generics.ListAPIView):
-    queryset = Tweet.objects.all()
-    serializer_class = AnonTweetSerializer
+    queryset = User.objects.all()
+    serializer_class = UserLessInfoSerializer
     filter_backends = [DjangoFilterBackend,filters.SearchFilter]
-    # filter_fields = ('title','author__username')
-    ordering =('-id')
-    search_fields = ('title','author__username')
-
-    # def get_queryset(self,*args,**kwargs):
-    #     queryset = Tweet.objects.all()
-    #     query = self.request.query_params.dict()
-    #     keyword = query.get("keyword",'')
-    #     if keyword:
-    #         queryset =  queryset.filter(
-    #             Q(title__icontains=keyword) |
-    #              Q(author__username__icontains=keyword )|
-    #             )
-    #     return queryset.order_by("-id")
-    
+    search_fields = ('username','nickname')
