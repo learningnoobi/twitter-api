@@ -1,4 +1,4 @@
-from rest_framework import viewsets, exceptions, status
+from rest_framework import viewsets, exceptions
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
@@ -31,7 +31,7 @@ class TweetViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-class ExploreTweetViewSet(ListAPIView):
+class ExploreTweetViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tweet.objects.all()
     serializer_class = TweetSerializer
     pagination_class = CustomPagination

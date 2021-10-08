@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'tweets',
+    'chat',
     'notifications',
     'djoser',
     'django_filters',
