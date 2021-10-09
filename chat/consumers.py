@@ -6,9 +6,6 @@ from users.models import User
 from notifications.models import Notification
 
 
-
-
-
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.me = self.scope.get('user')
@@ -25,48 +22,62 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def receive_json(self, content):
-        message = content.get("message", None)
-        print('username from client is ',content["username"])
-        self.newmsg = await sync_to_async(Message.objects.create)(
-            room=self.private_room,
-            sender=self.me,
-            text=message
-        )
-        await self.channel_layer.group_send(
-            self.room_name,
-            {
-                "type": "websocket_message",
-                "text": message,
-                "id": self.newmsg.id,
-                "username":self.newmsg.sender.username,
-                "avatar": self.newmsg.sender.avatar.url,
-            }
-        )
+        print(content["command"])
+        command = content.get("command", None)
+        if command == "private_chat":
+            message = content.get("message", None)
+            print('username from client is ', content["username"])
+            self.newmsg = await sync_to_async(Message.objects.create)(
+                room=self.private_room,
+                sender=self.me,
+                text=message
+            )
+            await self.channel_layer.group_send(
+                self.room_name,
+                {
+                    "type": "websocket_message",
+                    "text": message,
+                    "id": self.newmsg.id,
+                    "username": self.newmsg.sender.username,
+                    "avatar": self.newmsg.sender.avatar.url,
+                    "command": command
+                }
+            )
 
-    # @database_sync_to_async
-    # def store_message(self, text):
-    #     Message.objects.create(
-    #         room=self.private_room,
-    #         sender=self.me,
-    #         text=text
-    #     )
-
-    #     Notification.objects.create(
-    #         notification_type='M',
-    #         to_user=self.user2, from_user=self.me)
+        if command == "is_typing":
+            print('typing')
+            await self.channel_layer.group_send(
+                self.room_name,
+                {
+                    "type": "websocket_typing",
+                    "text": content["text"],
+                    "command": command,
+                    "user": content["user"]
+                }
+            )
 
     async def websocket_message(self, event):
-
 
         await self.send_json(({
             'id': event["id"],
             'text': event["text"],
+            'command': event["command"],
             'sender': {
                 "username": event["username"],
-                "avatar": event["avatar"]
+                "avatar": event["avatar"],
+
 
             }
         }))
+
+    async def websocket_typing(self, event):
+        await self.send_json((
+            {
+                'text': event["text"],
+                'command': event["command"],
+                'user': event["user"]
+            }
+        ))
 
     async def disconnect(self, close_code):
         print('disconnected')
