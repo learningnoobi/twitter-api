@@ -1,6 +1,20 @@
 from django.db import models
 from users.models import User
-# Create your models here.
+from django.db.models import Q
+
+class MessageManager(models.Manager):
+    def by_room(self, room):
+        messages = Message.objects.filter(room=room).order_by("created_at")
+        return messages
+
+class PrivateChatManager(models.Manager):
+    def create_room_if_none(self,u1,u2):
+        has_room = PrivateChat.objects.filter(Q(user1=u1 ,user2=u2)| Q(user1=u2,user2=u1)).first()
+        if not has_room:
+            print('not found so creating one ')
+            PrivateChat.objects.create(user1=u1,user2=u2)
+        return has_room  
+
 
 
 class BaseModel(models.Model):
@@ -17,6 +31,7 @@ class PrivateChat(BaseModel):
     connected_users = models.ManyToManyField(
         User, blank=True, related_name="connected_users")
     is_active = models.BooleanField(default=False)
+    objects = PrivateChatManager()
 
 
     def connect(self,user):
@@ -41,6 +56,7 @@ class Message(BaseModel):
     room = models.ForeignKey(PrivateChat, on_delete=models.CASCADE)
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField(blank=False, null=False)
+    objects = MessageManager()
 
     def __str__(self) -> str:
         return f'From <Room - {self.room}>'
