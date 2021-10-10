@@ -48,6 +48,9 @@ class PrivateChat(BaseModel):
             is_removed = True
         return is_removed
     
+    def last_msg(self):
+        return self.message_set.all().last()
+    
     def __str__(self) -> str:
         return f'Chat : {self.user1} - {self.user2}'
     

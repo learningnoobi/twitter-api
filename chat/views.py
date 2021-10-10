@@ -5,7 +5,7 @@ from users.models import User
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
-from .serializers import MessageSerializer
+from .serializers import MessageSerializer,PrivateRoomSerializer
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
@@ -19,7 +19,8 @@ def create_private_chat_room(request,username):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def check(request):
-    return Response({
-        "res":"ponded"
-    })
+def get_rooms(request):
+    u1 = request.user
+    rooms =  PrivateChat.objects.filter(Q(user1=u1)| Q(user2=u1))
+    serializer = PrivateRoomSerializer(rooms , many=True)
+    return Response(serializer.data)
