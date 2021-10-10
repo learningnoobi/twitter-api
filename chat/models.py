@@ -4,7 +4,7 @@ from django.db.models import Q
 
 class MessageManager(models.Manager):
     def by_room(self, room):
-        messages = Message.objects.filter(room=room).order_by("created_at")
+        messages = Message.objects.filter(room=room).order_by("-created_at")
         return messages
 
 class PrivateChatManager(models.Manager):
