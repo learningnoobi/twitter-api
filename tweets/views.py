@@ -48,6 +48,7 @@ class ExploreTweetViewSet(viewsets.ReadOnlyModelViewSet):
 def ReTweetView(request):
     data = request.data
     tweetId = data["tweetId"]
+    # tweet = get_object_or_404(Tweet,id=tweetId)
     try:
         tweet = Tweet.objects.get(id=tweetId)
     except:
@@ -68,8 +69,9 @@ def ReTweetView(request):
                 tweet=tweet,
                 to_user=tweet.author,
                 from_user=request.user)
-    serializer = TweetSerializer(re_tweet, {'request': request})
-    return Response({"retweet": True})
+        return Response({"retweet": True},status=HTTP_201_CREATED)
+
+
     
 
 
@@ -140,7 +142,7 @@ def ComentReplyView(request, pk):
         
         serializer = CommentSerializer(
             new_comment, context={'request': request})
-        return Response(serializer.data)
+        return Response(serializer.data,status=HTTP_201_CREATED)
 
 
 
@@ -167,7 +169,7 @@ def like_unlike_tweet(request):
             'liked': liked,
             'count': tweet.like_count
         })
-    return Response({"love": "no"})
+
 
 
 @api_view(['POST'])
@@ -186,7 +188,7 @@ def like_unlike_comment(request):
             'liked': liked,
             'count': comment.like_comment
         })
-    return Response({"love": "no"})
+
 
 
 @api_view(['POST'])
@@ -204,7 +206,7 @@ def bookmark_tweet(request):
         return Response({
             'bookmarked': bookmarked,
         })
-    return Response({"bookmar": "lol"})
+
 
 
 @api_view(['GET'])
