@@ -1,4 +1,5 @@
 from rest_framework import viewsets, exceptions
+from rest_framework.status import HTTP_201_CREATED
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
@@ -107,7 +108,7 @@ class ComentView(APIView):
                 from_user=request.user)
         serializer = CommentSerializer(
             new_comment, context={'request': request})
-        return Response(serializer.data)
+        return Response(serializer.data,status=HTTP_201_CREATED)
 
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
