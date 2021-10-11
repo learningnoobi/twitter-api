@@ -12,7 +12,6 @@ from users.models import User
 from notifications.models import Notification
 from mainproject.pagination import CustomPagination
 from users.models import User
-from rest_framework.generics import ListAPIView
 
 class TweetViewSet(viewsets.ModelViewSet):
     queryset = Tweet.objects.all()
