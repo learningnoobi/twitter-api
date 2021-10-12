@@ -34,7 +34,7 @@ def NotificationView(request):
                                         'request': request
                                         })
     # return Response(serializer.data)
-    return paginator.get_paginated_response(serializer.data)
+    return paginator.get_paginated_response({'data':serializer.data,'noti_count': noti_count})
     
 class NotificationSeen(APIView):
     def get(self, request):
