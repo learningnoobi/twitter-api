@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 from django.urls import reverse, resolve
 from rest_framework import status
 import json
-
+from notifications.models import Notification
 
 class TestTweetView(APITestCase):
     def setUp(self):
@@ -91,16 +91,29 @@ class TestTweetView(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_explore_tweet(self):
+        self.client.force_authenticate(user=self.u1)
+        response = self.client.get('/tweets/explore/global/',format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class LikeUnlikeTest(APITestCase):
     def setUp(self):
         self.u1 = User.objects.create_user(
             email="test@gmail.com", username="test", password="test123"
         )
+        self.u2 = User.objects.create_user(
+            email="test2@gmail.com", username="dummy", password="test123"
+        )
         self.tweet2 = Tweet.objects.create(
             title="Second tweet",
             author=self.u1,
         )
+        self.tweet2 = Tweet.objects.create(
+            title="third tweet",
+            author=self.u2,
+        )
+
 
     def test_like(self):
         self.client.force_authenticate(user=self.u1)
@@ -109,18 +122,34 @@ class LikeUnlikeTest(APITestCase):
         unlike_res = self.client.post(reverse("like-unlike"), {"pk": 1})
         self.assertEqual(unlike_res.data, {"liked": False, "count": 0})
 
+    def test_like_unlike_notification(self):
+        self.client.force_authenticate(user=self.u1)
+        self.client.post(reverse("like-unlike"), {"pk": 2})
+        notifications_count = Notification.objects.count()
+        self.assertEqual(notifications_count, 1)
+
 
 class CommentViewTest(APITestCase):
     def setUp(self):
         self.u1 = User.objects.create_user(
             email="test@gmail.com", username="test", password="test123"
         )
+        self.u2 = User.objects.create_user(
+            email="test2@gmail.com", username="dummy", password="test123"
+        )
         self.tweet2 = Tweet.objects.create(
             title="Second tweet",
             author=self.u1,
         )
+        self.tweet3 = Tweet.objects.create(
+            title="dummy tweet",
+            author=self.u2,
+        )
         self.comment = Comment.objects.create(
             body="first", author=self.u1, post=self.tweet2
+        )
+        self.comment2 = Comment.objects.create(
+            body="secondt", author=self.u2, post=self.tweet2
         )
         self.client.force_authenticate(user=self.u1)
 
@@ -143,6 +172,15 @@ class CommentViewTest(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def test_new_comment_notification(self):
+        url = reverse("comment-view", kwargs={"pk": 2})
+        data = {"body": "comment"}
+        response = self.client.post(
+            url, data=json.dumps(data), content_type="application/json"
+        )
+        notifications_count = Notification.objects.count()
+        self.assertEqual(notifications_count, 1)
+
     def test_reply_comment(self):
         url = reverse("comment-reply", kwargs={"pk": 1})
         data = {"comId": 1, "body": "this is reply to comment"}
@@ -150,14 +188,21 @@ class CommentViewTest(APITestCase):
         response = self.client.post(
             url, data=json.dumps(data), content_type="application/json"
         )
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
         blank_data = {"comId": 1, "body": ""}
         response = self.client.post(
             url, data=json.dumps(blank_data), content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def test_reply_comment_notification(self):
+        url = reverse("comment-reply", kwargs={"pk": 1})
+        data = {"comId": 2, "body": "this is reply to comment"}
+        self.client.post(
+            url, data=json.dumps(data), content_type="application/json"
+        )
+        notifications_count = Notification.objects.count()
+        self.assertEqual(notifications_count, 1)
 
     def test_like_unlike_comment(self):
         response = self.client.post(reverse("like-unlike-comment"), {"pk": 1})
