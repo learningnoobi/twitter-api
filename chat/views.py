@@ -10,7 +10,7 @@ from mainproject.pagination import CustomPagination
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
-def create_private_chat_room(request, username):
+def return_chat_messages(request, username):
     print('username is ', username)
     u2 = User.objects.get(username=username)
     u1 = request.user
