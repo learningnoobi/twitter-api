@@ -35,7 +35,7 @@ class ExploreTweetViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tweet.objects.all()
     serializer_class = TweetSerializer
     pagination_class = CustomPagination
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -69,7 +69,8 @@ def ReTweetView(request):
                 tweet=tweet,
                 to_user=tweet.author,
                 from_user=request.user)
-        return Response({"retweet": True},status=HTTP_201_CREATED)
+        serializer =  TweetSerializer(re_tweet,context={"request":request})
+        return Response(serializer.data,status=HTTP_201_CREATED)
 
 
     
@@ -77,7 +78,7 @@ def ReTweetView(request):
 
 
 class ComentView(APIView):
-    permission_classes= [IsAuthenticated]
+    # permission_classes= [IsAuthenticated]
 
     def get_object(self,pk):
         tweet = Tweet.objects.get(id=pk)
