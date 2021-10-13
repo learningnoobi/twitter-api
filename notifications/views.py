@@ -30,7 +30,7 @@ def NotificationView(request):
     if noti_count == 0:
         noti_count  = None  
     serializer = NotificationSerializer(result_page, many=True, context={
-                                        'noti_count': noti_count,
+                                        
                                         'request': request
                                         })
     # return Response(serializer.data)
