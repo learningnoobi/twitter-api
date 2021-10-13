@@ -7,7 +7,7 @@ from .serializers import UserSerializer, UserEditSerializer
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from .permissions import IsUserOrReadOnly
-
+from mainproject.pagination import CustomPagination
 
 from notifications.models import Notification
 
@@ -68,3 +68,14 @@ def recommend_user(request):
     users = users.exclude(id__in = request.user.following.all())[:5]
     serializer = UserSerializer(users,many=True,context={'request':request})
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def follow_user_list(request):
+    users = User.objects.exclude(username=request.user.username)
+    users = users.exclude(id__in = request.user.following.all())
+
+    paginator = CustomPagination()
+    result_page = paginator.paginate_queryset(users,request)
+    serializer = UserSerializer(result_page,many=True,context={'request':request})
+    return paginator.get_paginated_response(serializer.data)
