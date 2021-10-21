@@ -7,10 +7,10 @@ React Code : https://github.com/learningnoobi/twitter-api
 ## how to run
 `mkdir yourfolder` </br>
 `cd yourfolder` </br>
-`virtualenv env`</br>
+`virtualenv env`</br> 
 `source env/bin/activate`</br>
 `git clone https://github.com/learningnoobi/twitter-api.git` </br>
 `pip install -r requirements.txt`</br>
 `cd twitter-api`</br>
 `python manage.py runserver`</br>
-
+Note: private info are added in .env file so create new .env file in root add them there
