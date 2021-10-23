@@ -23,7 +23,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://yestwitterclone12.herokuapp.com']
 
 
 # Application definition
@@ -206,7 +206,7 @@ DJOSER = {
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    "https://boring-poitras-d8e401.netlify.app"
 ]
 
 CLOUDINARY_STORAGE= {
