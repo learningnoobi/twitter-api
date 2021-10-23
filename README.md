@@ -14,3 +14,11 @@ React Code : https://github.com/learningnoobi/twitter-api
 `cd twitter-api`</br>
 `python manage.py runserver`</br>
 Note: private info are added in .env file so create new .env file in root add them there
+### .env file looks like this
+
+`SECRET_KEY=yoursecretkey`</br>
+`email=youremail`</br>
+`password=yourapppassword`</br>
+`cloud_name=cloudinaryname`</br>
+`api_key=cloudinaryapikey`</br>
+`api_secret=cloudinarysecretkey`</br>
