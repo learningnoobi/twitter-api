@@ -78,20 +78,20 @@ TEMPLATES = [
         },
     },
 ]
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
-# redis is pain for setting up , So i am just using inmemory for testing site
 # CHANNEL_LAYERS = {
 #     "default": {
-#         "BACKEND": "channels.layers.InMemoryChannelLayer"
-#     }
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
 # }
+# redis is pain for setting up , So i am just using inmemory for testing site
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 # WSGI_APPLICATION = 'mainproject.wsgi.application'
 ASGI_APPLICATION = 'mainproject.asgi.application'
 
