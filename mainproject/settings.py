@@ -205,9 +205,10 @@ DJOSER = {
 }
 
 
-CORS_ALLOWED_ORIGINS = [
-    "https://boring-poitras-d8e401.netlify.app"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "https://boring-poitras-d8e401.netlify.app"
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 CLOUDINARY_STORAGE= {
     'CLOUD_NAME':env('cloud_name'),
