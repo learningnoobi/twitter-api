@@ -21,9 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['https://yestwitterclone12.herokuapp.com']
+ALLOWED_HOSTS = ['yestwitterclone12.herokuapp.com','127.0.0.1']
 
 
 # Application definition
@@ -180,7 +180,7 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
 
-DOMAIN = ('localhost:3000')
+DOMAIN = ('https://boring-poitras-d8e401.netlify.app')
 SITE_NAME = ('Yes Twitter Clone')
 # DJOSER CONFIG
 DJOSER = {
