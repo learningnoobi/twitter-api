@@ -43,7 +43,7 @@ class User(AbstractUser):
     password = models.CharField(max_length=200)
     following = models.ManyToManyField("self",symmetrical=False,related_name="followed" ,blank=True)
     bio = models.TextField(blank=True ,default="")
-    avatar = models.ImageField(default='zenitsu.jpg', upload_to='avatars')
+    avatar = models.ImageField(default='default.jpg', upload_to='avatars')
     cover_image = models.ImageField(default='cover.jpg', upload_to='avatars')
    
 

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django.db.models import Q
 from .serializers import MessageSerializer, PrivateRoomSerializer
 from mainproject.pagination import CustomPagination
-
+from notifications.models import Notification
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def return_chat_messages(request, username):
@@ -21,7 +21,6 @@ def return_chat_messages(request, username):
     result_page = paginator.paginate_queryset(messages,request)
 
     serializer = MessageSerializer(result_page, many=True)
-    # return Response(serializer.data)
     return paginator.get_paginated_response(serializer.data)
 
 
@@ -30,6 +29,11 @@ def get_rooms(request):
     u1 = request.user
     if request.method=="GET":
         rooms = PrivateChat.objects.filter(Q(user1=u1) | Q(user2=u1))
+        Notification.objects.filter(
+            Q(notification_type='M',
+              to_user=request.user,
+              ) 
+        ).delete()
     if request.method=="POST":
         other_user = request.data.get("other_user", None)
         rooms = PrivateChat.objects.filter(

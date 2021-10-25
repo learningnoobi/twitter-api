@@ -4,6 +4,7 @@ from asgiref.sync import async_to_sync, sync_to_async
 from .models import PrivateChat, Message
 from users.models import User
 from notifications.models import Notification
+from django.db.models import Q
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -16,22 +17,23 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         self.private_room = await sync_to_async(PrivateChat.objects.create_room_if_none)(self.me, self.user2)
         self.room_name = f'private_room_{self.private_room.id}'
         print('private room is ', self.private_room.id)
+        await sync_to_async(self.private_room.connect(self.me))
         await self.channel_layer.group_add(
             self.room_name,
             self.channel_name
         )
 
     async def receive_json(self, content):
-        print(content["command"])
         command = content.get("command", None)
         if command == "private_chat":
             message = content.get("message", None)
-            print('username from client is ', content["username"])
+
             self.newmsg = await sync_to_async(Message.objects.create)(
                 room=self.private_room,
                 sender=self.me,
                 text=message
             )
+            await self.message_notice()
             await self.channel_layer.group_send(
                 self.room_name,
                 {
@@ -79,8 +81,25 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             }
         ))
 
+    @database_sync_to_async
+    def message_notice(self):
+        if not Notification.objects.filter(
+            Q(notification_type='M',
+              to_user=self.user2,
+              from_user=self.me) |
+            Q(notification_type='M',
+                to_user=self.me,
+                from_user=self.user2)
+
+        ).exists():
+            Notification.objects.create(
+                notification_type='M',
+                to_user=self.user2,
+                from_user=self.me)
+
     async def disconnect(self, close_code):
         print('disconnected')
+        await sync_to_async(self.private_room.disconnect(self.me))
         await self.channel_layer.group_discard(
             self.room_name,
             self.channel_name

@@ -86,7 +86,7 @@ TEMPLATES = [
 #         },
 #     },
 # }
-# redis is pain for setting up , So i am just using inmemory for testing site
+# redis is pain for setting up in heroku , So i am just using inmemory for testing site
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
@@ -180,7 +180,7 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
 
-DOMAIN = ('https://boring-poitras-d8e401.netlify.app')
+DOMAIN = ('boring-poitras-d8e401.netlify.app')
 SITE_NAME = ('Yes Twitter Clone')
 # DJOSER CONFIG
 DJOSER = {
@@ -206,7 +206,8 @@ DJOSER = {
 
 
 # CORS_ALLOWED_ORIGINS = [
-#     "https://boring-poitras-d8e401.netlify.app"
+#     # "https://boring-poitras-d8e401.netlify.app"
+#     "htpp://localhost:3000"
 # ]
 CORS_ALLOW_ALL_ORIGINS = True
 

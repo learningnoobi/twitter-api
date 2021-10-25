@@ -45,6 +45,11 @@ class NotificationSeen(APIView):
         for i in notify_list:
             i.user_has_seen = True
             i.save()
+        Notification.objects.filter(
+            Q(notification_type='M',
+              to_user=request.user,
+              ) 
+        ).delete()
         return Response({"user_seen": True})
     
     def post(self,request):

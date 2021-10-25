@@ -185,6 +185,12 @@ def like_unlike_comment(request):
         else:
             liked = True
             comment.liked.add(request.user)
+            if request.user != comment.author:
+              Notification.objects.get_or_create(
+                    notification_type='LR',
+                    comment=comment,
+                    to_user=comment.author,
+                    from_user=request.user)
         return Response({
             'liked': liked,
             'count': comment.like_comment
