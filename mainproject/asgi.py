@@ -1,16 +1,18 @@
+import os
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mainproject.settings")
+django.setup()
+
 from tweets.consumers import MyConsumer
 from django.core.asgi import get_asgi_application
 from django.urls import path
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-import os
-import django
+
+
 from chat.consumers import ChatConsumer
 from .channelsmiddleware import JwtAuthMiddlewareStack
 
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mainproject.settings")
-django.setup()
 
 
 application = ProtocolTypeRouter({
