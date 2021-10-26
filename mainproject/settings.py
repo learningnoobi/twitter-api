@@ -24,7 +24,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = True
 
 # ALLOWED_HOSTS = ['127.0.0.1','yestwitterclone12.herokuapp.com',]
-ALLOWED_HOSTS=[]
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -80,7 +80,6 @@ TEMPLATES = [
 ]
 # WSGI_APPLICATION = 'mainproject.wsgi.application'
 ASGI_APPLICATION = 'mainproject.asgi.application'
-
 
 
 # Database
@@ -159,7 +158,7 @@ STATICFILES_DIRS = [
 ]
 MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media'
-DEFAULT_FILE_STORAGE="cloudinary_storage.storage.MediaCloudinaryStorage"
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -207,15 +206,16 @@ DJOSER = {
 
 
 CORS_ALLOWED_ORIGINS = [
-    "https://boring-poitras-d8e401.netlify.app"
-    #in dev mode
+
+    env('crossdomain')
+    # in dev mode
     # "htpp://localhost:3000"
 ]
 # CORS_ALLOW_ALL_ORIGINS = True
 
-CLOUDINARY_STORAGE= {
-    'CLOUD_NAME':env('cloud_name'),
-    'API_KEY':env('api_key'),
-    'API_SECRET':env('api_secret')
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env('cloud_name'),
+    'API_KEY': env('api_key'),
+    'API_SECRET': env('api_secret')
 }
 django_heroku.settings(locals())
