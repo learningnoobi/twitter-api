@@ -78,6 +78,20 @@ TEMPLATES = [
         },
     },
 ]
+# WSGI_APPLICATION = 'mainproject.wsgi.application'
+ASGI_APPLICATION = 'mainproject.asgi.application'
+
+
+
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 # CHANNEL_LAYERS = {
 #     "default": {
 #         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -92,19 +106,6 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
-# WSGI_APPLICATION = 'mainproject.wsgi.application'
-ASGI_APPLICATION = 'mainproject.asgi.application'
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -180,7 +181,7 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
 
-DOMAIN = ('boring-poitras-d8e401.netlify.app')
+DOMAIN = (env('domain'))
 SITE_NAME = ('Yes Twitter Clone')
 # DJOSER CONFIG
 DJOSER = {
@@ -205,11 +206,12 @@ DJOSER = {
 }
 
 
-# CORS_ALLOWED_ORIGINS = [
-#     # "https://boring-poitras-d8e401.netlify.app"
-#     "htpp://localhost:3000"
-# ]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://boring-poitras-d8e401.netlify.app"
+    #in dev mode
+    # "htpp://localhost:3000"
+]
+# CORS_ALLOW_ALL_ORIGINS = True
 
 CLOUDINARY_STORAGE= {
     'CLOUD_NAME':env('cloud_name'),
