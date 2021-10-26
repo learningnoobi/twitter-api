@@ -8,6 +8,7 @@ from django.db.models import Q
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
+    
     async def connect(self):
         self.me = self.scope.get('user')
 
@@ -17,11 +18,16 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         self.private_room = await sync_to_async(PrivateChat.objects.create_room_if_none)(self.me, self.user2)
         self.room_name = f'private_room_{self.private_room.id}'
         print('private room is ', self.private_room.id)
-        await sync_to_async(self.private_room.connect(self.me))
+        
+        
+        await sync_to_async(self.private_room.connect)(self.me)
+
         await self.channel_layer.group_add(
             self.room_name,
             self.channel_name
         )
+    
+
 
     async def receive_json(self, content):
         command = content.get("command", None)
@@ -98,9 +104,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 from_user=self.me)
 
     async def disconnect(self, close_code):
-        print('disconnected')
-        await sync_to_async(self.private_room.disconnect(self.me))
+       
+        await sync_to_async(self.private_room.disconnect)(self.me)
         await self.channel_layer.group_discard(
             self.room_name,
             self.channel_name
         )
+
