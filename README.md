@@ -3,7 +3,7 @@ Django Rest framework Real Time Twitter API . Fully functional twitter app with 
 
 FrontEnd is in React js . 
 
-React Code : https://github.com/learningnoobi/twitter-api
+React Code : https://github.com/learningnoobi/twitter-react
 ## how to run
 `mkdir yourfolder` </br>
 `cd yourfolder` </br>
