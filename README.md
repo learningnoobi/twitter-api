@@ -4,6 +4,10 @@ Django Rest framework Real Time Twitter API . Fully functional twitter app with 
 FrontEnd is in React js . 
 
 React Code : https://github.com/learningnoobi/twitter-react
+## If you are in windows ,you might get error installing redis . either install that seperately or use docker image
+## I am using cloudinary as my image storage , so make one cloudinary account and add that too in you env file
+
+
 ## how to run
 `mkdir yourfolder` </br>
 `cd yourfolder` </br>
@@ -15,6 +19,7 @@ React Code : https://github.com/learningnoobi/twitter-react
 `python manage.py runserver`</br>
 Note: private info are added in .env file so create new .env file in root add them there
 ### .env file looks like this
+
 
 `SECRET_KEY=yoursecretkey`</br>
 `email=youremail`</br>
